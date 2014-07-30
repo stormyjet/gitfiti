@@ -9,7 +9,7 @@ noun : Carefully crafted graffiti in a github commit history calendar
 import datetime
 import math
 import itertools
-import urllib2
+import urllib
 import json
 
 TITLE = '''
@@ -168,10 +168,10 @@ def get_calendar(username, base_url='https://github.com/'):
     """retrieves the github commit calendar data for a username"""
     url = base_url + 'users/' + username + '/contributions_calendar_data'
     try:
-        page = urllib2.urlopen(url)
-    except (urllib2.HTTPError,urllib2.URLError) as e:
-        print "There was a problem fetching data from {0}".format(url)
-        print e
+        page = urllib.urlopen(url)
+    except (urllib.HTTPError,urllib.URLError) as e:
+        print ("There was a problem fetching data from {0}" , format(url))
+        print (e)
         raise SystemExit
     return json.load(page)
 
@@ -253,11 +253,11 @@ def save(output, filename):
     f.close()
 
 def main():
-    print TITLE
-    print "Enter github url"
-    ghe = raw_input("Enter nothing for https://github.com/ to be used: ")
-    print 'Enter your github username:'
-    username = raw_input(">")
+    print (TITLE)
+    print ("Enter github url")
+    ghe = input("Enter nothing for https://github.com/ to be used: ")
+    print ('Enter your github username:')
+    username = input(">")
     if ghe is None or ghe == "":
         git_base = "https://github.com/"
         cal = get_calendar(username)
@@ -266,11 +266,11 @@ def main():
         git_base = ghe
     m = multiplier(max_commits(cal))
 
-    print 'Enter name of the repo to be used by gitfiti:'
-    repo = raw_input(">")
+    print ('Enter name of the repo to be used by gitfiti:')
+    repo = input(">")
 
-    print 'Enter number of weeks to offset the image (from the left):'
-    offset = raw_input(">")
+    print ('Enter number of weeks to offset the image (from the left):')
+    offset = input(">")
     if offset == None:
         offset = 0
     else:
@@ -285,19 +285,19 @@ def main():
            '(this option generates WAY more commits)\n'
            'Any other input will cause the default matching behavior'
            ).format(max_commits(cal))
-    match = raw_input(">")
+    match = input(">")
     if match == "gitfiti": 
         match = m
     else: 
         match = 1
 
-    print 'enter file(s) to load images from (blank if not applicable)'
-    img_names = raw_input(">").split(' ')
+    print ('enter file(s) to load images from (blank if not applicable)')
+    img_names = input(">").split(' ')
     images = dict(IMAGES, **load_images(img_names))
 
-    print 'enter the image name to gitfiti'
-    print 'images: ' + ", ".join(images.keys())
-    image = raw_input(">")
+    print ('enter the image name to gitfiti')
+    print ('images: ' + ", ".join(images.keys()))
+    image = input(">")
     if image == None:
         image = IMAGES['kitty']
     else:
@@ -309,13 +309,14 @@ def main():
         output = fake_it(image, get_start_date(), username, repo, offset,
                 m*match)
     else:
-        git_url = raw_input("Enter git url like git@site.github.com: ")
+        git_url = input("Enter git url like git@site.github.com: ")
         output = fake_it(image, get_start_date(), username, repo, offset,
                 m*match,git_url=git_url)
 
     save(output, 'gitfiti.sh')
-    print 'gitfiti.sh saved.'
-    print 'Create a new(!) repo at: {0}new and run it.'.format(git_base)
+    print ('gitfiti.sh saved.')
+    print ('Create a new(!) repo at: {0}new and run it.' , format(git_base))
+    pause
 
 if __name__ == '__main__':
     main()
